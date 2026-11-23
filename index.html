@@ -11,7 +11,14 @@
 :root[data-theme="dark"]{--bg:#15121f;--ink:#efecf8;--muted:#a39fb8;--line:#2d2840;--accent:#a78bfa;--strong:#c4b5fd;--soft:#241d38;--hover:#1c1829;--boost:#67e8f9;--card:#1c1829;--on-accent:#15121f;color-scheme:dark}
 *{box-sizing:border-box;margin:0}
 body{font-family:var(--font);color:var(--ink);background:var(--bg);padding-block:32px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));direction:rtl;font-size:15px}
-main{max-width:680px;margin:0 auto}
+main{max-width:1100px;margin:0 auto}
+p.sub{max-width:680px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:28px;align-items:start}
+.results{min-width:0}
+#side{position:sticky;top:max(16px,env(safe-area-inset-top,0px))}
+#sel.empty{border-style:dashed;border-color:var(--line);color:var(--muted)}
+#sel.empty h2{color:var(--ink)}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr);gap:0}#side{position:static;order:-1}#sel.empty{display:none}}
 .logo{direction:ltr;text-align:right;font-weight:800;font-size:20px}.logo b{color:var(--accent)}
 h1{font-size:30px;margin:18px 0 6px;text-wrap:balance;line-height:1.2}
 p.sub{color:var(--muted);font-size:16px;margin-bottom:18px;line-height:1.5}
@@ -78,16 +85,19 @@ footer a{color:var(--accent);font-weight:700}
 <div class="logo">Sim<b>TLV</b></div>
 <h1>כמה עולה גיגה במדינה שלכם?</h1>
 <p class="sub">תשלום לפי שימוש בפועל, או חבילת GigaBoost סגורה ל-30 יום. כתבו שם של מדינה בעברית או באנגלית. נוסעים לכמה מדינות? לחצו "הוספה" ליד כל אחת ותראו חבילה אחת שמכסה את כולן.</p>
+<div class="layout"><div class="results">
 <div class="cur" role="group" aria-label="מטבע"><button type="button" data-c="USD" aria-pressed="true">$ דולר</button><button type="button" data-c="ILS" aria-pressed="false">₪ שקל</button></div>
 <input id="q" type="search" dir="auto" placeholder="למשל USA או גרמניה" aria-label="חיפוש מדינה" autocomplete="off">
-<section id="sel" hidden aria-live="polite"></section>
 <div id="count" aria-live="polite"></div>
 <ul id="list"></ul>
+</div>
+<aside id="side"><section id="sel" aria-live="polite"></section></aside>
+</div>
 <footer>
 <span id="stamp"></span><br>
 GigaBoost: חבילה סגורה ל-30 יום. כשהחבילה נגמרת, הכרטיס עובר אוטומטית לתשלום לפי שימוש בפועל.<br>
 <span id="curnote"></span><br>
-יש שאלות? וואטסאפ: <a href="https://wa.me/972512274657" target="_blank" rel="noopener"><span dir="ltr">051-227-4657</span></a> · <span dir="ltr">v2.3</span>
+יש שאלות? וואטסאפ: <a href="https://wa.me/972512274657" target="_blank" rel="noopener"><span dir="ltr">051-227-4657</span></a> · <span dir="ltr">v2.4</span>
 </footer>
 </main>
 <script>
@@ -162,7 +172,8 @@ function toggle(iso){
  draw();
 }
 function drawSel(){
- S.textContent="";S.hidden=!SEL.length;if(!SEL.length)return;
+ S.textContent="";S.classList.toggle("empty",!SEL.length);
+ if(!SEL.length){S.appendChild(el("h2",null,"נוסעים לכמה מדינות?"));S.appendChild(el("div","note","לחצו \"הוספה\" ליד כל מדינה, והחבילה שמכסה את כולן תופיע כאן."));return}
  var cs=SEL.map(byIso).filter(Boolean);
  var hd=el("div","sel-head");hd.appendChild(el("h2",null,cs.length===1?"המדינה שבחרתם":"בחרתם "+cs.length+" מדינות"));
  var cl=el("button","clear","ניקוי");cl.type="button";cl.onclick=function(){SEL=[];draw()};hd.appendChild(cl);S.appendChild(hd);
